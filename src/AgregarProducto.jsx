@@ -23,15 +23,21 @@ const AgregarProducto = ({ onCancelar, onExito }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await fetch('api/productos', {
+      const response = await fetch('https://100.119.237.80/api/productos', {
         method: 'POST',
-        headers: { 'Content-Type': 'https://100.119.237.80/application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      alert('Producto agregado');
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      alert('Producto agregado exitosamente');
       onExito();
     } catch (error) {
       console.error('Error al agregar producto:', error);
+      alert('Ocurrió un error al agregar el producto.');
     }
   };
 
@@ -44,9 +50,13 @@ const AgregarProducto = ({ onCancelar, onExito }) => {
         <h2 className="text-xl font-bold mb-4">Agregar Producto</h2>
         {Object.keys(formData).map((key) => (
           <div className="mb-2" key={key}>
-            <label className="block font-semibold mb-1">{key}</label>
+            <label className="block font-semibold mb-1 capitalize">{key.replace('_', ' ')}</label>
             <input
-              type={key === 'Precio' || key === 'Stock' || key === 'calificacion' ? 'number' : 'text'}
+              type={
+                key === 'Precio' || key === 'Stock' || key === 'calificacion'
+                  ? 'number'
+                  : 'text'
+              }
               name={key}
               value={formData[key]}
               onChange={handleChange}
